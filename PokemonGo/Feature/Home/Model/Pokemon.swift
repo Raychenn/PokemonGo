@@ -102,6 +102,7 @@ struct PokemonSummary {
     let typeNames: [String]
     let imageURLString: String?
     let stats: [StatSummary]
+    var isFavorite: Bool // mutable for ViewModel to update
     
     struct StatSummary {
         let name: String
@@ -116,6 +117,7 @@ extension PokemonSummary {
         self.typeNames = pokemon.types.map { $0.type.name }
         self.imageURLString = pokemon.imageURLString
         self.stats = pokemon.stats.map { StatSummary(name: $0.stat.name, baseStat: $0.baseStat) }
+        self.isFavorite = FavoriteManager.shared.isFavorite(pokemonId: pokemon.id)
     }
 }
 

@@ -288,10 +288,9 @@ extension HomeViewController: UICollectionViewDataSource {
             }
             
             if let pokemon = viewModel.pokemon(at: indexPath.item) {
-                cell.configure(with: pokemon, isFavorite: false) { isFavorite in
-                    print("Pokemon \(pokemon.name) favorite: \(isFavorite)")
-                    // TODO: Handle favorite toggle
-                }
+                cell.configure(with: pokemon)
+                    .subscribe(event)
+                    .store(in: &cell.cancellables)
             }
             return cell
             

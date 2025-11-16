@@ -8,15 +8,15 @@
 import UIKit
 import SnapKit
 import Kingfisher
+import Combine
+import CombineCocoa
 
 class PokemonCell: UICollectionViewCell {
     
     // MARK: - Properties
     
-    static let reuseIdentifier = "PokemonCell"
-    
-    private var isFavorite = false
-    private var onFavoriteToggle: ((Bool) -> Void)?
+    var cancellables: Set<AnyCancellable> = []
+    private var evnet = PassthroughSubject<HomeViewModel.Input, Never>()
     
     // MARK: - UI Components
     
@@ -153,21 +153,15 @@ class PokemonCell: UICollectionViewCell {
             make.bottom.equalToSuperview().offset(-12)
             make.width.height.equalTo(32)
         }
-        
-        favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
     }
     
     // MARK: - Configuration
     
-    func configure(with pokemon: PokemonSummary, isFavorite: Bool = false, onFavoriteToggle: ((Bool) -> Void)? = nil) {
+    func configure(with pokemon: PokemonSummary) -> AnyPublisher<HomeViewModel.Input, Never> {
         numberLabel.text = "#\(pokemon.id)"
         nameLabel.text = pokemon.name.uppercased()
+        favoriteButton.isSelected = pokemon.isFavorite
         
-        self.isFavorite = isFavorite
-        self.onFavoriteToggle = onFavoriteToggle
-        favoriteButton.isSelected = isFavorite
-        
-        // Load pokemon image
         if let imageURLString = pokemon.imageURLString, let url = URL(string: imageURLString) {
             pokemonImageView.kf.setImage(
                 with: url,
@@ -181,7 +175,6 @@ class PokemonCell: UICollectionViewCell {
             pokemonImageView.image = UIImage(systemName: "photo")
         }
         
-        // Configure types
         typesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         for typeName in pokemon.typeNames {
@@ -193,6 +186,23 @@ class PokemonCell: UICollectionViewCell {
         if let primaryType = pokemon.typeNames.first {
             containerView.backgroundColor = getTypeColor(for: primaryType).withAlphaComponent(0.15)
         }
+        
+        return favoriteButton.tapPublisher
+            .handleEvents(receiveOutput: { [weak self] _ in
+                guard let self = self else { return }
+                
+                UIView.animate(withDuration: 0.1, animations: {
+                    self.favoriteButton.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+                }) { _ in
+                    UIView.animate(withDuration: 0.1) {
+                        self.favoriteButton.transform = .identity
+                    }
+                }
+            })
+            .map { _ in 
+                HomeViewModel.Input.favoritePokemonsUpdated(pokemonId: pokemon.id)
+            }
+            .eraseToAnyPublisher()
     }
     
     private func createTypeLabel(for type: String) -> UILabel {
@@ -237,23 +247,6 @@ class PokemonCell: UICollectionViewCell {
         }
     }
     
-    // MARK: - Actions
-    
-    @objc private func favoriteButtonTapped() {
-        isFavorite.toggle()
-        favoriteButton.isSelected = isFavorite
-        onFavoriteToggle?(isFavorite)
-        
-        // Add animation
-        UIView.animate(withDuration: 0.1, animations: {
-            self.favoriteButton.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-        }) { _ in
-            UIView.animate(withDuration: 0.1) {
-                self.favoriteButton.transform = .identity
-            }
-        }
-    }
-    
     // MARK: - Reuse
     
     override func prepareForReuse() {
@@ -265,8 +258,7 @@ class PokemonCell: UICollectionViewCell {
         nameLabel.text = nil
         typesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         containerView.backgroundColor = .systemBackground
-        isFavorite = false
         favoriteButton.isSelected = false
-        onFavoriteToggle = nil
+        cancellables.removeAll()
     }
 }

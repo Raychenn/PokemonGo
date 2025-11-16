@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		ED3D53222EC706800020AF3B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = ED3D53212EC706800020AF3B /* SnapKit */; };
 		ED3D53CA2EC851610020AF3B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = ED3D53C92EC851610020AF3B /* Kingfisher */; };
+		ED3D54122EC98DED0020AF3B /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = ED3D54112EC98DED0020AF3B /* CombineCocoa */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED3D53CA2EC851610020AF3B /* Kingfisher in Frameworks */,
+				ED3D54122EC98DED0020AF3B /* CombineCocoa in Frameworks */,
 				ED3D53222EC706800020AF3B /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -134,6 +136,7 @@
 			packageProductDependencies = (
 				ED3D53212EC706800020AF3B /* SnapKit */,
 				ED3D53C92EC851610020AF3B /* Kingfisher */,
+				ED3D54112EC98DED0020AF3B /* CombineCocoa */,
 			);
 			productName = PokemonGo;
 			productReference = ED3D52952EC705790020AF3B /* PokemonGo.app */;
@@ -220,6 +223,7 @@
 			packageReferences = (
 				ED3D53202EC706800020AF3B /* XCRemoteSwiftPackageReference "SnapKit" */,
 				ED3D53C82EC851610020AF3B /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				ED3D54102EC98DED0020AF3B /* XCRemoteSwiftPackageReference "CombineCocoa" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ED3D52962EC705790020AF3B /* Products */;
@@ -600,6 +604,14 @@
 				minimumVersion = 8.6.1;
 			};
 		};
+		ED3D54102EC98DED0020AF3B /* XCRemoteSwiftPackageReference "CombineCocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CombineCommunity/CombineCocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -612,6 +624,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED3D53C82EC851610020AF3B /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		ED3D54112EC98DED0020AF3B /* CombineCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED3D54102EC98DED0020AF3B /* XCRemoteSwiftPackageReference "CombineCocoa" */;
+			productName = CombineCocoa;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

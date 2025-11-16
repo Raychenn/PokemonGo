@@ -32,6 +32,7 @@ class HomeViewModel: ObservableObject {
     // MARK: - Properties
     
     enum Input {
+        case favoritePokemonsUpdated(pokemonId: Int)
         case lifeCycele(ViewControllerLifeCycle)
     }
     
@@ -52,11 +53,11 @@ class HomeViewModel: ObservableObject {
     @Published private var isLoadingRegions = false
     
     let state = Output()
-    let dataSoruce = DataSource()
     
     // MARK: - Private Properties
     
     private let apiService: PokemonAPIServiceProtocol
+    private let dataSoruce = DataSource()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
@@ -77,6 +78,17 @@ class HomeViewModel: ObservableObject {
                 default:
                     break
                 }
+            case .favoritePokemonsUpdated(pokemonId: let id):
+                // Toggle favorite state in FavoriteManager
+                let newState = FavoriteManager.shared.toggleFavorite(pokemonId: id)
+                print("pokemon.isFavorite from newState: \(newState), id: \(id)")
+                // Update the pokemon in dataSource
+                if let index = self?.dataSoruce.featuredPokemons.firstIndex(where: { $0.id == id }) {
+                    self?.dataSoruce.featuredPokemons[index].isFavorite = newState
+                }
+                
+                // Reload to update UI
+                self?.state.reloadData.send(())
             }
         }
         .store(in: &cancellables)
@@ -168,17 +180,14 @@ class HomeViewModel: ObservableObject {
     }
     
     func pokemon(at index: Int) -> PokemonSummary? {
-        guard index < dataSoruce.featuredPokemons.count else { return nil }
-        return dataSoruce.featuredPokemons[index]
+        return dataSoruce.featuredPokemons[safe: index]
     }
     
     func type(at index: Int) -> String? {
-        guard index < dataSoruce.pokemonTypes.count else { return nil }
-        return dataSoruce.pokemonTypes[index]
+        return dataSoruce.pokemonTypes[safe: index]
     }
     
     func region(at index: Int) -> Region? {
-        guard index < dataSoruce.regions.count else { return nil }
-        return dataSoruce.regions[index]
+        return dataSoruce.regions[safe: index]
     }
 }

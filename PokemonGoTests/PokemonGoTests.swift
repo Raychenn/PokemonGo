@@ -100,9 +100,9 @@ struct PokemonGoTests {
         let viewModel = HomeViewModel(apiService: PokemonAPIService(networkService: mockService))
         
         // Then
-        #expect(viewModel.featuredPokemons.isEmpty)
-        #expect(viewModel.pokemonTypes.isEmpty)
-        #expect(viewModel.regions.isEmpty)
+        #expect(viewModel.dataSoruce.featuredPokemons.isEmpty)
+        #expect(viewModel.dataSoruce.pokemonTypes.isEmpty)
+        #expect(viewModel.dataSoruce.regions.isEmpty)
         #expect(!viewModel.isLoading)
     }
     
@@ -113,7 +113,7 @@ struct PokemonGoTests {
         // Then
         #expect(viewModel.numberOfSections() == 3)
         #expect(HomeViewModel.Section.feature.title == "Featured Pokemon")
-        #expect(HomeViewModel.Section.types.title == "Pokemon Types")
+        #expect(HomeViewModel.Section.types.title == "Types")
         #expect(HomeViewModel.Section.regions.title == "Regions")
     }
 

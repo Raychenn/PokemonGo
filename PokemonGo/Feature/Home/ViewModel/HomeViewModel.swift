@@ -52,12 +52,12 @@ class HomeViewModel {
     @Published private var isLoadingTypes = false
     @Published private var isLoadingRegions = false
     
+    let dataSoruce = DataSource()
     let state = Output()
     
     // MARK: - Private Properties
     
     private let apiService: PokemonAPIServiceProtocol
-    private let dataSoruce = DataSource()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
@@ -84,7 +84,6 @@ class HomeViewModel {
                     self?.dataSoruce.featuredPokemons[index].isFavorite = newState
                 }
                 
-                // Reload to update UI
                 self?.state.reloadData.send(())
             }
         }

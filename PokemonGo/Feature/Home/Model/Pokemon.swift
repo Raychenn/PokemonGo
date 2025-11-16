@@ -102,7 +102,7 @@ struct PokemonSummary {
     let typeNames: [String]
     let imageURLString: String?
     let stats: [StatSummary]
-    var isFavorite: Bool // mutable for ViewModel to update
+    var isFavorite: Bool 
     
     struct StatSummary {
         let name: String

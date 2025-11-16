@@ -179,6 +179,16 @@ class HomeViewModel {
         return dataSoruce.featuredPokemons[safe: index]
     }
     
+    func pokemonCellPosition(at index: Int) -> PokemonCell.CellPosition {
+        let positionInGroup = index % 3
+        switch positionInGroup {
+        case 0: return .first
+        case 1: return .middle
+        case 2: return .last
+        default: return .middle
+        }
+    }
+    
     func type(at index: Int) -> String? {
         return dataSoruce.pokemonTypes[safe: index]
     }

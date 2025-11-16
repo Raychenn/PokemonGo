@@ -33,15 +33,7 @@ extension HomeViewController: UICollectionViewDataSource {
             }
             
             if let pokemon = viewModel.pokemon(at: indexPath.item) {
-                let positionInGroup = indexPath.item % 3
-                let position: PokemonCell.CellPosition = {
-                    switch positionInGroup {
-                    case 0: return .first
-                    case 1: return .middle
-                    case 2: return .last
-                    default: return .middle
-                    }
-                }()
+                let position = viewModel.pokemonCellPosition(at: indexPath.item)
                 
                 cell.configure(with: pokemon, position: position)
                     .subscribe(event)

@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import SwiftUI
 
 class HomeViewController: UIViewController {
     
@@ -356,20 +357,22 @@ extension HomeViewController: UICollectionViewDelegate {
         switch section {
         case .feature:
             if let pokemon = viewModel.pokemon(at: indexPath.item) {
-                print("Selected Pokemon: \(pokemon.name)")
-                // Navigate to detail screen
+                // Navigate to SwiftUI detail screen
+                let detailView = PokemonDetailView(pokemon: pokemon)
+                let hostingController = UIHostingController(rootView: detailView)
+                navigationController?.pushViewController(hostingController, animated: true)
             }
             
         case .types:
             if let type = viewModel.type(at: indexPath.item) {
                 print("Selected Type: \(type)")
-                // Filter by type
+                // TODO: Filter by type
             }
             
         case .regions:
             if let region = viewModel.region(at: indexPath.item) {
                 print("Selected Region: \(region.name)")
-                // Navigate to region detail
+                // TODO: Navigate to region detail
             }
         }
     }

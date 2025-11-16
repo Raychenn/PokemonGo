@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class HomeViewModel: ObservableObject {
+class HomeViewModel {
     
     // MARK: - Section Definition
     
@@ -79,10 +79,7 @@ class HomeViewModel: ObservableObject {
                     break
                 }
             case .favoritePokemonsUpdated(pokemonId: let id):
-                // Toggle favorite state in FavoriteManager
                 let newState = UserDefaultManager.shared.toggleFavorite(pokemonId: id)
-                print("pokemon.isFavorite from newState: \(newState), id: \(id)")
-                // Update the pokemon in dataSource
                 if let index = self?.dataSoruce.featuredPokemons.firstIndex(where: { $0.id == id }) {
                     self?.dataSoruce.featuredPokemons[index].isFavorite = newState
                 }
@@ -104,7 +101,7 @@ class HomeViewModel: ObservableObject {
         loadRegions()
     }
     
-    /// Load first 9 featured pokemons
+    ///Spec: Load first 9 featured pokemons
     private func loadFeaturedPokemons() {
         isLoadingPokemons = true
         state.errorMessage = nil
@@ -145,7 +142,7 @@ class HomeViewModel: ObservableObject {
         Task { @MainActor in
             do {
                 let allRegions = try await apiService.fetchRegions()
-                // Only take first 6 regions for home page
+                //Spec: Only take first 6 regions for home page
                 dataSoruce.regions = Array(allRegions.prefix(6))
                 isLoadingRegions = false
                 state.reloadData.send(())

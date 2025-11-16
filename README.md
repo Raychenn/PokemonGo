@@ -47,21 +47,6 @@ dependencies: [
 ]
 ```
 
-## 🎨 UI Highlights
-
-### Custom Components
-- **PokemonCell**: Custom collection view cell with type-based color theming
-- **TypesCell**: Pill-shaped type badges with custom colors
-- **RegionsCell**: Region cards with location counts
-- **SectionHeaderView**: Reusable header with "See more" button
-
-### Design Features
-- ✨ Type-based color schemes (Grass, Fire, Water, etc.)
-- 🎭 Smooth animations and transitions
-- 📐 Rounded corners and shadows for depth
-- 🌊 Liquid glass effect (iOS 18+)
-- 🎯 SF Symbols with symbol effects
-
 ## 🔧 API Integration
 
 ### Network Layer
@@ -138,47 +123,6 @@ open PokemonGo.xcodeproj
 - Select a simulator or device
 - Press `Cmd + R` to build and run
 
-### Swift Package Dependencies
-Dependencies will be automatically resolved by Xcode on first build.
-
-## 🎯 Key Implementation Details
-
-### MVVM with Combine
-```swift
-// ViewModel publishes data
-@Published var pokemons: [PokemonSummary] = []
-
-// View subscribes to changes
-viewModel.$pokemons
-    .sink { [weak self] pokemons in
-        self?.updateUI(with: pokemons)
-    }
-    .store(in: &cancellables)
-```
-
-### Pagination
-```swift
-func shouldLoadMore(currentItem: PokemonSummary) -> Bool {
-    guard let lastItem = pokemons.last else { return false }
-    return currentItem.id == lastItem.id && hasMoreData && !isLoading
-}
-```
-
-### Type-Based Theming
-```swift
-private func getTypeColor(for type: String) -> UIColor {
-    switch type.lowercased() {
-    case "grass": return UIColor(red: 0.48, green: 0.78, blue: 0.48, alpha: 1.0)
-    case "fire": return UIColor(red: 0.93, green: 0.51, blue: 0.29, alpha: 1.0)
-    // ... more types
-    }
-}
-```
-
-## 📸 Screenshots
-
-> Add screenshots here to showcase your app
-
 ## 🧪 Testing
 
 The project includes:
@@ -189,10 +133,6 @@ The project includes:
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is available under the MIT License.
 
 ## 🙏 Acknowledgments
 

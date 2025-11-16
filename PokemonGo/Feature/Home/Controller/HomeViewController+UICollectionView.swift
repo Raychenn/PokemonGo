@@ -127,6 +127,8 @@ extension HomeViewController: UICollectionViewDelegate {
             if let pokemon = viewModel.pokemon(at: indexPath.item) {
                 let detailView = PokemonDetailView(pokemon: pokemon)
                 let hostingController = UIHostingController(rootView: detailView)
+                hostingController.navigationItem.hidesBackButton = true
+                
                 navigationController?.pushViewController(hostingController, animated: true)
             }
             

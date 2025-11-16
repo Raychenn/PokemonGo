@@ -12,6 +12,8 @@ struct PokemonDetailView: View {
     
     let pokemon: PokemonSummary
     @State private var isFavorite: Bool
+    @State private var scrollOffset: CGFloat = 0
+    @Environment(\.dismiss) private var dismiss
     
     init(pokemon: PokemonSummary) {
         self.pokemon = pokemon
@@ -37,6 +39,14 @@ struct PokemonDetailView: View {
                         .frame(height: 300 + safeAreaTop)
                         .clipShape(RoundedCorner(radius: 40, corners: [.bottomLeft, .bottomRight]))
                         .padding(.top, -safeAreaTop)
+                        .background(
+                            GeometryReader { proxy in
+                                Color.clear.preference(
+                                    key: ScrollOffsetPreferenceKey.self,
+                                    value: proxy.frame(in: .named("scroll")).minY
+                                )
+                            }
+                        )
                         
                         VStack {
                             Spacer()
@@ -102,7 +112,6 @@ struct PokemonDetailView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
-                            .background(glassBackground())
                             .cornerRadius(16)
                             
                             // Height Card
@@ -115,7 +124,6 @@ struct PokemonDetailView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
-                            .background(glassBackground())
                             .cornerRadius(16)
                         }
                         .padding(.horizontal)
@@ -136,7 +144,6 @@ struct PokemonDetailView: View {
                                 }
                             }
                             .padding(20)
-                            .background(glassBackground())
                             .cornerRadius(20)
                             .padding(.horizontal)
                         }
@@ -144,71 +151,67 @@ struct PokemonDetailView: View {
                     }
                     .padding(.bottom, 40)
                 }
-                .toolbar {
-                    // Title in center
-                    ToolbarItem(placement: .principal) {
-                        Text("#\(String(format: "%03d", pokemon.id))")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.white)
-                    }
-                    
-                    // Favorite button in top right
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                                isFavorite.toggle()
-                            }
-                            _ = UserDefaultManager.shared.toggleFavorite(pokemonId: pokemon.id)
-                        }) {
-                            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(isFavorite ? .red : .white)
-                                .symbolEffect(.bounce, value: isFavorite)
-                        }
-                    }
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarBackButtonHidden(false)
-                .toolbarBackground(.hidden, for: .navigationBar)
-                .toolbarColorScheme(.dark, for: .navigationBar)
+            }
+            .coordinateSpace(name: "scroll")
+            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                scrollOffset = value
             }
             .ignoresSafeArea(edges: .top)
+            .toolbar {
+                // Custom back button
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "arrow.backward.circle")
+                            .font(.system(size: 24, weight: .regular))
+                            .foregroundColor(.white)
+                    }
+                }
+                
+                // Title in center
+                ToolbarItem(placement: .principal) {
+                    Text("#\(String(format: "%03d", pokemon.id))")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.white)
+                }
+                
+                // Favorite button in top right
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            isFavorite.toggle()
+                        }
+                        _ = UserDefaultManager.shared.toggleFavorite(pokemonId: pokemon.id)
+                    }) {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(isFavorite ? .red : .white)
+                            .symbolEffect(.bounce, value: isFavorite)
+                    }
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .background(
+                // Custom navigation bar background
+                GeometryReader { geo in
+                    if scrollOffset < -50 {
+                        Color(getTypeColor(for: pokemon.typeNames.first ?? "normal"))
+                            .opacity(0.95)
+                            .frame(height: geo.safeAreaInsets.top + 44)
+                            .ignoresSafeArea(edges: .top)
+                            .transition(.opacity)
+                            .animation(.easeInOut(duration: 0.25), value: scrollOffset < -50)
+                    }
+                }
+            )
         }
     }
     
     // MARK: - Helper Methods
-    
-    @ViewBuilder
-    private func glassBackground() -> some View {
-        if #available(iOS 18.0, *) {
-            // iOS 18+ Liquid Glass effect
-            ZStack {
-                // Base blur
-                Color.white.opacity(0.1)
-                
-                // Glass blur layer
-                Color.white.opacity(0.05)
-                    .blur(radius: 10)
-                
-                // Subtle gradient overlay
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(0.2),
-                        Color.white.opacity(0.05)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            }
-            .background(.ultraThinMaterial)
-            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-        } else {
-            // Fallback for iOS 17 and below
-            Color.white.opacity(0.1)
-                .background(.ultraThinMaterial)
-                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-        }
-    }
     
     private func getWeight() -> String {
         // PokeAPI weight is in hectograms (0.1 kg)
@@ -305,6 +308,16 @@ struct RoundedCorner: Shape {
             cornerRadii: CGSize(width: radius, height: radius)
         )
         return Path(path.cgPath)
+    }
+}
+
+// MARK: - ScrollOffsetPreferenceKey
+
+struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }
 

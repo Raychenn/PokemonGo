@@ -69,9 +69,10 @@ class HomeViewController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
+        setupNavigationUI()
+        
         title = "Pokédex"
         view.backgroundColor = .systemBackground
-        
         view.addSubview(collectionView)
         view.addSubview(activityIndicator)
         
@@ -96,6 +97,15 @@ class HomeViewController: UIViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: String(describing: SectionHeaderView.self)
         )
+    }
+    
+    private func setupNavigationUI() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.shadowColor = .clear
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
     
     private func setupBindings() {

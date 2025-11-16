@@ -143,63 +143,22 @@ class PokemonCell: UICollectionViewCell {
     
     // MARK: - Configuration
     
-//    func configure(with pokemon: PokemonSummary) -> AnyPublisher<HomeViewModel.Input, Never> {
-//        numberLabel.text = "#\(pokemon.id)"
-//        nameLabel.text = pokemon.name.uppercased()
-//        favoriteButton.isSelected = pokemon.isFavorite
-//        
-//        if let imageURLString = pokemon.imageURLString, let url = URL(string: imageURLString) {
-//            pokemonImageView.kf.setImage(
-//                with: url,
-//                placeholder: UIImage(systemName: "photo"),
-//                options: [
-//                    .transition(.fade(0.2)),
-//                    .cacheOriginalImage
-//                ]
-//            )
-//        } else {
-//            pokemonImageView.image = UIImage(systemName: "photo")
-//        }
-//        
-//        typesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-//        
-//        for typeName in pokemon.typeNames {
-//            let typeLabel = createTypeLabel(for: typeName)
-//            typesStackView.addArrangedSubview(typeLabel)
-//        }
-//        
-//        // Set background color based on primary type
-//        if let primaryType = pokemon.typeNames.first {
-//            containerView.backgroundColor = getTypeColor(for: primaryType).withAlphaComponent(0.15)
-//        }
-//        
-//        return favoriteButton.tapPublisher
-//            .map { _ in 
-//                HomeViewModel.Input.favoritePokemonsUpdated(pokemonId: pokemon.id)
-//            }
-//            .eraseToAnyPublisher()
-//    }
     func configure(with pokemon: PokemonSummary, position: CellPosition) -> AnyPublisher<HomeViewModel.Input, Never> {
         numberLabel.text = "#\(pokemon.id)"
         nameLabel.text = pokemon.name.uppercased()
         favoriteButton.isSelected = pokemon.isFavorite
         
-        // 根據位置設置圓角
         switch position {
         case .single:
-            // 單獨一個 cell（如果只有一個）
             containerView.layer.cornerRadius = 12
             containerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner,
                                                   .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         case .first:
-            // 第一個 cell - 只有上方圓角
             containerView.layer.cornerRadius = 12
             containerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         case .middle:
-            // 中間的 cell - 沒有圓角
             containerView.layer.cornerRadius = 0
         case .last:
-            // 最後一個 cell - 只有下方圓角
             containerView.layer.cornerRadius = 12
             containerView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         }

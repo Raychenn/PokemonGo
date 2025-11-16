@@ -80,7 +80,7 @@ class HomeViewModel: ObservableObject {
                 }
             case .favoritePokemonsUpdated(pokemonId: let id):
                 // Toggle favorite state in FavoriteManager
-                let newState = FavoriteManager.shared.toggleFavorite(pokemonId: id)
+                let newState = UserDefaultManager.shared.toggleFavorite(pokemonId: id)
                 print("pokemon.isFavorite from newState: \(newState), id: \(id)")
                 // Update the pokemon in dataSource
                 if let index = self?.dataSoruce.featuredPokemons.firstIndex(where: { $0.id == id }) {

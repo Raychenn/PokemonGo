@@ -13,8 +13,8 @@ class HomeViewController: UIViewController {
     
     // MARK: - Properties
     
-    private let viewModel: HomeViewModel
-    private let event = PassthroughSubject<HomeViewModel.Input, Never>()
+    let viewModel: HomeViewModel
+    let event = PassthroughSubject<HomeViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
 
     private lazy var collectionView: UICollectionView = {
@@ -94,7 +94,7 @@ class HomeViewController: UIViewController {
         collectionView.register(
             SectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: SectionHeaderView.reuseIdentifier
+            withReuseIdentifier: String(describing: SectionHeaderView.self)
         )
     }
     
@@ -154,20 +154,20 @@ class HomeViewController: UIViewController {
         // Item
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(120)
+            heightDimension: .absolute(120)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
         // Group - 3 items per page
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.9),
-            heightDimension: .estimated(380)
+            widthDimension: .fractionalWidth(0.8),
+            heightDimension: .absolute(120 * 3)
         )
         let group = NSCollectionLayoutGroup.vertical(
             layoutSize: groupSize,
             subitems: [item, item, item]
         )
-        group.interItemSpacing = .fixed(8)
+        group.interItemSpacing = .fixed(0)
         
         // Section
         let section = NSCollectionLayoutSection(group: group)
@@ -262,121 +262,6 @@ class HomeViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionViewDataSource
-
-extension HomeViewController: UICollectionViewDataSource {
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return viewModel.numberOfSections()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.numberOfItems(in: section)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let section = HomeViewModel.Section(rawValue: indexPath.section) else {
-            return UICollectionViewCell()
-        }
-        
-        switch section {
-        case .feature:
-            guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: String(describing: PokemonCell.self),
-                for: indexPath
-            ) as? PokemonCell else {
-                return UICollectionViewCell()
-            }
-            
-            if let pokemon = viewModel.pokemon(at: indexPath.item) {
-                cell.configure(with: pokemon)
-                    .subscribe(event)
-                    .store(in: &cell.cancellables)
-            }
-            return cell
-            
-        case .types:
-            guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: String(describing: TypesCell.self),
-                for: indexPath
-            ) as? TypesCell else {
-                return UICollectionViewCell()
-            }
-            
-            if let type = viewModel.type(at: indexPath.item) {
-                cell.configure(with: type)
-            }
-            return cell
-            
-        case .regions:
-            guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: String(describing: RegionsCell.self),
-                for: indexPath
-            ) as? RegionsCell else {
-                return UICollectionViewCell()
-            }
-            
-            if let region = viewModel.region(at: indexPath.item) {
-                cell.configure(with: region)
-            }
-            return cell
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        guard kind == UICollectionView.elementKindSectionHeader,
-              let headerView = collectionView.dequeueReusableSupplementaryView(
-                ofKind: kind,
-                withReuseIdentifier: SectionHeaderView.reuseIdentifier,
-                for: indexPath
-              ) as? SectionHeaderView,
-              let section = HomeViewModel.Section(rawValue: indexPath.section) else {
-            return UICollectionReusableView()
-        }
-        
-        headerView.configure(title: section.title, showSeeMore: true)
-        headerView.onSeeMoreTapped = { [weak self] in
-            self?.handleSeeMore(for: section)
-        }
-        
-        return headerView
-    }
-    
-    private func handleSeeMore(for section: HomeViewModel.Section) {
-        print("See more tapped for section: \(section.title)")
-        // TODO: Navigate to detail screen
-    }
-}
-
-// MARK: - UICollectionViewDelegate
-
-extension HomeViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let section = HomeViewModel.Section(rawValue: indexPath.section) else { return }
-        
-        switch section {
-        case .feature:
-            if let pokemon = viewModel.pokemon(at: indexPath.item) {
-                // Navigate to SwiftUI detail screen
-                let detailView = PokemonDetailView(pokemon: pokemon)
-                let hostingController = UIHostingController(rootView: detailView)
-                navigationController?.pushViewController(hostingController, animated: true)
-            }
-            
-        case .types:
-            if let type = viewModel.type(at: indexPath.item) {
-                print("Selected Type: \(type)")
-                // TODO: Filter by type
-            }
-            
-        case .regions:
-            if let region = viewModel.region(at: indexPath.item) {
-                print("Selected Region: \(region.name)")
-                // TODO: Navigate to region detail
-            }
-        }
-    }
-}
 
 
 

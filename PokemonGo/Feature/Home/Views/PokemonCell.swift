@@ -69,19 +69,12 @@ class PokemonCell: UICollectionViewCell {
         return stackView
     }()
     
-    private let pokeballImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "circle.circle.fill")
-        imageView.tintColor = .systemGray4
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-    
     private let favoriteButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.setImage(UIImage(systemName: "heart.fill"), for: .selected)
         button.tintColor = .systemRed
+        button.backgroundColor = .clear
         return button
     }()
     
@@ -106,12 +99,11 @@ class PokemonCell: UICollectionViewCell {
         containerView.addSubview(numberLabel)
         containerView.addSubview(nameLabel)
         containerView.addSubview(typesStackView)
-        containerView.addSubview(pokeballImageView)
         containerView.addSubview(rightImageView)
         containerView.addSubview(favoriteButton)
         
         containerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(4)
+            make.edges.equalToSuperview()
         }
         
         pokemonImageView.snp.makeConstraints { make in
@@ -136,12 +128,6 @@ class PokemonCell: UICollectionViewCell {
             make.bottom.lessThanOrEqualToSuperview().offset(-12)
         }
         
-        pokeballImageView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-12)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(40)
-        }
-        
         rightImageView.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-8)
             make.top.equalToSuperview().offset(8)
@@ -157,10 +143,66 @@ class PokemonCell: UICollectionViewCell {
     
     // MARK: - Configuration
     
-    func configure(with pokemon: PokemonSummary) -> AnyPublisher<HomeViewModel.Input, Never> {
+//    func configure(with pokemon: PokemonSummary) -> AnyPublisher<HomeViewModel.Input, Never> {
+//        numberLabel.text = "#\(pokemon.id)"
+//        nameLabel.text = pokemon.name.uppercased()
+//        favoriteButton.isSelected = pokemon.isFavorite
+//        
+//        if let imageURLString = pokemon.imageURLString, let url = URL(string: imageURLString) {
+//            pokemonImageView.kf.setImage(
+//                with: url,
+//                placeholder: UIImage(systemName: "photo"),
+//                options: [
+//                    .transition(.fade(0.2)),
+//                    .cacheOriginalImage
+//                ]
+//            )
+//        } else {
+//            pokemonImageView.image = UIImage(systemName: "photo")
+//        }
+//        
+//        typesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+//        
+//        for typeName in pokemon.typeNames {
+//            let typeLabel = createTypeLabel(for: typeName)
+//            typesStackView.addArrangedSubview(typeLabel)
+//        }
+//        
+//        // Set background color based on primary type
+//        if let primaryType = pokemon.typeNames.first {
+//            containerView.backgroundColor = getTypeColor(for: primaryType).withAlphaComponent(0.15)
+//        }
+//        
+//        return favoriteButton.tapPublisher
+//            .map { _ in 
+//                HomeViewModel.Input.favoritePokemonsUpdated(pokemonId: pokemon.id)
+//            }
+//            .eraseToAnyPublisher()
+//    }
+    func configure(with pokemon: PokemonSummary, position: CellPosition) -> AnyPublisher<HomeViewModel.Input, Never> {
         numberLabel.text = "#\(pokemon.id)"
         nameLabel.text = pokemon.name.uppercased()
         favoriteButton.isSelected = pokemon.isFavorite
+        
+        // 根據位置設置圓角
+        switch position {
+        case .single:
+            // 單獨一個 cell（如果只有一個）
+            containerView.layer.cornerRadius = 12
+            containerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner,
+                                                  .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        case .first:
+            // 第一個 cell - 只有上方圓角
+            containerView.layer.cornerRadius = 12
+            containerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        case .middle:
+            // 中間的 cell - 沒有圓角
+            containerView.layer.cornerRadius = 0
+        case .last:
+            // 最後一個 cell - 只有下方圓角
+            containerView.layer.cornerRadius = 12
+            containerView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        }
         
         if let imageURLString = pokemon.imageURLString, let url = URL(string: imageURLString) {
             pokemonImageView.kf.setImage(
@@ -188,21 +230,18 @@ class PokemonCell: UICollectionViewCell {
         }
         
         return favoriteButton.tapPublisher
-            .handleEvents(receiveOutput: { [weak self] _ in
-                guard let self = self else { return }
-                
-                UIView.animate(withDuration: 0.1, animations: {
-                    self.favoriteButton.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-                }) { _ in
-                    UIView.animate(withDuration: 0.1) {
-                        self.favoriteButton.transform = .identity
-                    }
-                }
-            })
-            .map { _ in 
+            .map { _ in
                 HomeViewModel.Input.favoritePokemonsUpdated(pokemonId: pokemon.id)
             }
             .eraseToAnyPublisher()
+    }
+
+    // 在 PokemonCell 類別中添加這個 enum
+    enum CellPosition {
+        case single  // 只有一個 cell
+        case first   // 第一個
+        case middle  // 中間
+        case last    // 最後一個
     }
     
     private func createTypeLabel(for type: String) -> UILabel {

@@ -7,11 +7,11 @@
 
 import Foundation
 
-final class FavoriteManager {
+final class UserDefaultManager {
     
     // MARK: - Singleton
     
-    static let shared = FavoriteManager()
+    static let shared = UserDefaultManager()
     
     private init() {}
     

@@ -34,10 +34,9 @@ struct PokemonDetailView: View {
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
-                        .ignoresSafeArea(.all)
                         .frame(height: 300 + safeAreaTop)
-                        .offset(y: -safeAreaTop)
                         .clipShape(RoundedCorner(radius: 40, corners: [.bottomLeft, .bottomRight]))
+                        .padding(.top, -safeAreaTop)
                         
                         VStack {
                             Spacer()
@@ -159,7 +158,7 @@ struct PokemonDetailView: View {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                                 isFavorite.toggle()
                             }
-                            _ = FavoriteManager.shared.toggleFavorite(pokemonId: pokemon.id)
+                            _ = UserDefaultManager.shared.toggleFavorite(pokemonId: pokemon.id)
                         }) {
                             Image(systemName: isFavorite ? "heart.fill" : "heart")
                                 .font(.system(size: 20, weight: .semibold))

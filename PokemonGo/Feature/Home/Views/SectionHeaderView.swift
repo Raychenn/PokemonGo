@@ -7,14 +7,14 @@
 
 import UIKit
 import SnapKit
+import Combine
+import CombineCocoa
 
 class SectionHeaderView: UICollectionReusableView {
     
     // MARK: - Properties
     
-    static let reuseIdentifier = "SectionHeaderView"
-    
-    var onSeeMoreTapped: (() -> Void)?
+    var cancellables: Set<AnyCancellable> = []
     
     // MARK: - UI Components
     
@@ -63,22 +63,17 @@ class SectionHeaderView: UICollectionReusableView {
         
         stackView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16))
-        }
-        
-        seeMoreButton.addTarget(self, action: #selector(seeMoreButtonTapped), for: .touchUpInside)
+        }        
     }
     
     // MARK: - Configuration
     
-    func configure(title: String, showSeeMore: Bool = true) {
+    func configure(title: String, showSeeMore: Bool = true) -> AnyPublisher<Void, Never> {
         titleLabel.text = title
         seeMoreButton.isHidden = !showSeeMore
-    }
-    
-    // MARK: - Actions
-    
-    @objc private func seeMoreButtonTapped() {
-        onSeeMoreTapped?()
+        
+        return seeMoreButton.tapPublisher
+            .eraseToAnyPublisher()
     }
     
     // MARK: - Reuse
@@ -87,7 +82,7 @@ class SectionHeaderView: UICollectionReusableView {
         super.prepareForReuse()
         titleLabel.text = nil
         seeMoreButton.isHidden = false
-        onSeeMoreTapped = nil
+        cancellables.removeAll()
     }
 }
 

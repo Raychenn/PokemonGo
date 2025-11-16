@@ -117,7 +117,7 @@ extension PokemonSummary {
         self.typeNames = pokemon.types.map { $0.type.name }
         self.imageURLString = pokemon.imageURLString
         self.stats = pokemon.stats.map { StatSummary(name: $0.stat.name, baseStat: $0.baseStat) }
-        self.isFavorite = FavoriteManager.shared.isFavorite(pokemonId: pokemon.id)
+        self.isFavorite = UserDefaultManager.shared.isFavorite(pokemonId: pokemon.id)
     }
 }
 

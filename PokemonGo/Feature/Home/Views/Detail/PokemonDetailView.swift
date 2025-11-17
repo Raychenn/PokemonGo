@@ -26,7 +26,6 @@ struct PokemonDetailView: View {
             
             ScrollView {
                 VStack(spacing: 0) {
-                    // Header with gradient background
                     ZStack(alignment: .top) {
                         LinearGradient(
                             colors: [
@@ -83,13 +82,8 @@ struct PokemonDetailView: View {
                                         .background(
                                             ZStack {
                                                 Color(getTypeColor(for: typeName))
-                                                
-                                                // Liquid Glass effect for iOS 18+
-                                                if #available(iOS 18.0, *) {
-                                                    Color(getTypeColor(for: typeName))
-                                                        .opacity(0.3)
-                                                        .blur(radius: 10)
-                                                }
+                                                    .opacity(0.3)
+                                                    .blur(radius: 10)
                                             }
                                         )
                                         .cornerRadius(20)
@@ -100,7 +94,6 @@ struct PokemonDetailView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.top, 24)
                         
-                        // Weight and Height with Glass effect
                         HStack(spacing: 16) {
                             // Weight Card
                             VStack(spacing: 8) {
@@ -128,7 +121,7 @@ struct PokemonDetailView: View {
                         }
                         .padding(.horizontal)
                         
-                        // Base Stats with Glass effect
+                        // Base Stats
                         VStack(alignment: .leading, spacing: 16) {
                             Text("Base Stats")
                                 .font(.system(size: 28, weight: .bold))

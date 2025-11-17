@@ -53,11 +53,9 @@ class SeeMorePokemonViewModel: ObservableObject {
                     offset: currentOffset
                 )
                 
-                // Update state
                 if newPokemons.isEmpty {
                     hasMoreData = false
                 } else {
-                    // Update favorite status for each pokemon
                     let updatedPokemons = newPokemons.map { pokemon in
                         var updatedPokemon = pokemon
                         updatedPokemon.isFavorite = UserDefaultManager.shared.isFavorite(pokemonId: pokemon.id)
@@ -67,7 +65,6 @@ class SeeMorePokemonViewModel: ObservableObject {
                     pokemons.append(contentsOf: updatedPokemons)
                     currentOffset += pageSize
                     
-                    // Check if we got less than requested (means no more data)
                     if newPokemons.count < pageSize {
                         hasMoreData = false
                     }
@@ -84,7 +81,6 @@ class SeeMorePokemonViewModel: ObservableObject {
     func toggleFavorite(for pokemon: PokemonSummary) {
         let newState = UserDefaultManager.shared.toggleFavorite(pokemonId: pokemon.id)
         
-        // Update the pokemon in the list
         if let index = pokemons.firstIndex(where: { $0.id == pokemon.id }) {
             pokemons[index].isFavorite = newState
         }

@@ -29,20 +29,17 @@ struct SeeMorePokemonView: View {
                     }
                 }
                 
-                // Loading indicator
                 if viewModel.isLoading {
                     ProgressView()
                         .padding()
                 }
                 
-                // Error message
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .padding()
                 }
                 
-                // End of list message
                 if !viewModel.hasMoreData && !viewModel.pokemons.isEmpty {
                     Text("No more Pokémon to load")
                         .foregroundColor(.secondary)
@@ -69,7 +66,6 @@ struct PokemonListRow: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            // Pokemon Image
             if let imageURLString = pokemon.imageURLString,
                let url = URL(string: imageURLString) {
                 KFImage(url)
@@ -88,7 +84,6 @@ struct PokemonListRow: View {
                     .cornerRadius(12)
             }
             
-            // Pokemon Info
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(pokemon.name.capitalized)
@@ -117,7 +112,6 @@ struct PokemonListRow: View {
             
             Spacer()
             
-            // Favorite Button
             Button(action: onFavoriteTap) {
                 Image(systemName: pokemon.isFavorite ? "heart.fill" : "heart")
                     .font(.system(size: 24))

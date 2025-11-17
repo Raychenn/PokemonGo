@@ -10,10 +10,6 @@ import SnapKit
 
 class RegionsCell: UICollectionViewCell {
     
-    // MARK: - Properties
-    
-    static let reuseIdentifier = "RegionsCell"
-    
     // MARK: - UI Components
     
     private let containerView: UIView = {

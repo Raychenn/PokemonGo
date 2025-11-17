@@ -37,6 +37,8 @@ struct Pokemon: Codable {
     let types: [PokemonType]
     let sprites: Sprites
     let stats: [PokemonStat]
+    let weight: Double
+    let height: Double
     
     var imageURLString: String? {
         sprites.other?.officialArtwork.frontDefault ?? sprites.frontDefault
@@ -99,6 +101,8 @@ struct OfficialArtwork: Codable {
 struct PokemonSummary {
     let id: Int
     let name: String
+    let weight: Double
+    let height: Double
     let typeNames: [String]
     let imageURLString: String?
     let stats: [StatSummary]
@@ -114,6 +118,8 @@ extension PokemonSummary {
     init(from pokemon: Pokemon) {
         self.id = pokemon.id
         self.name = pokemon.name
+        self.weight = pokemon.weight
+        self.height = pokemon.height
         self.typeNames = pokemon.types.map { $0.type.name }
         self.imageURLString = pokemon.imageURLString
         self.stats = pokemon.stats.map { StatSummary(name: $0.stat.name, baseStat: $0.baseStat) }

@@ -214,15 +214,11 @@ struct PokemonDetailView: View {
     // MARK: - Helper Methods
     
     private func getWeight() -> String {
-        // PokeAPI weight is in hectograms (0.1 kg)
-        let weightInKg = Double(pokemon.id * 10) / 10.0
-        return String(format: "%.1f KG", weightInKg)
+        return String(format: "%.1f KG", pokemon.weight)
     }
     
     private func getHeight() -> String {
-        // PokeAPI height is in decimeters (0.1 m)
-        let heightInM = Double(pokemon.id) / 5.0
-        return String(format: "%.1f M", heightInM)
+        return String(format: "%.1f M", pokemon.height)
     }
     
     private func getTypeColor(for type: String) -> UIColor {
@@ -327,6 +323,8 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
             pokemon: PokemonSummary(
                 id: 3,
                 name: "venusaur",
+                weight: 60,
+                height: 2.0,
                 typeNames: ["grass", "poison"],
                 imageURLString: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/3.png",
                 stats: [

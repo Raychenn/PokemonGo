@@ -195,12 +195,11 @@ class PokemonCell: UICollectionViewCell {
             .eraseToAnyPublisher()
     }
 
-    // 在 PokemonCell 類別中添加這個 enum
     enum CellPosition {
-        case single  // 只有一個 cell
-        case first   // 第一個
-        case middle  // 中間
-        case last    // 最後一個
+        case single
+        case first
+        case middle
+        case last   
     }
     
     private func createTypeLabel(for type: String) -> UILabel {

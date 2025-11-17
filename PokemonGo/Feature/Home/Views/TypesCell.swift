@@ -10,10 +10,6 @@ import SnapKit
 
 class TypesCell: UICollectionViewCell {
     
-    // MARK: - Properties
-    
-    static let reuseIdentifier = "TypesCell"
-    
     // MARK: - UI Components
     
     private let containerView: UIView = {
